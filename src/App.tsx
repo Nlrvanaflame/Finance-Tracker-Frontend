@@ -4,6 +4,7 @@ import LandingPage from './components/LandingPage'
 import RegisterPage from './components/RegisterPage'
 import LoginPage from './components/LoginPage'
 import RecordManagementPage from './components/RecordManagementPage'
+import AccountManagement from './components/AccountManagement'
 
 function App() {
   const routes: RouteObject[] = [
@@ -20,7 +21,8 @@ function App() {
         { path: 'register', element: <RegisterPage /> },
         { path: 'login', element: <LoginPage /> },
         { path: 'dashboard', element: <Dashboard /> },
-        { path: 'record-management', element: <RecordManagementPage /> }
+        { path: 'record-management', element: <RecordManagementPage /> },
+        { path: 'account-management', element: <AccountManagement /> }
       ]
     }
   ]

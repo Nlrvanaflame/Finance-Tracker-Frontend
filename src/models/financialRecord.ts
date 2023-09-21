@@ -6,3 +6,6 @@ export interface FinancialRecord {
     description: string;
     record_date: Date;
   }
+
+  export type updateRecord = Pick<FinancialRecord, 'user_id' | 'type' 
+  | 'amount' | 'description'>
