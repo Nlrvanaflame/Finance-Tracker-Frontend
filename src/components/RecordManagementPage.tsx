@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 interface Record {
   id: number
@@ -76,8 +77,23 @@ const RecordManagementPage: React.FC = () => {
   })
 
   return (
-    <div style={{ backgroundColor: '#35455D', color: '#dcdde0', padding: '20px' }}>
-      <h1 style={{ color: '#dcdde0', textAlign: 'center', fontSize: '2em' }}>Record Management</h1>
+    <div
+      style={{ backgroundColor: '#35455D', color: '#dcdde0', minHeight: '100vh', padding: '20px' }}
+    >
+      <Link
+        to="/"
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          fontSize: '2em',
+          color: '#dcdde0',
+          textDecoration: 'none'
+        }}
+      >
+        ←
+      </Link>
+      <h1 style={{ color: 'white', textAlign: 'center', fontSize: '2em' }}>Record Management</h1>
       <div
         style={{
           backgroundColor: '#4d5b7a',
@@ -86,9 +102,9 @@ const RecordManagementPage: React.FC = () => {
           margin: '20px 0'
         }}
       >
-        <h2 style={{ color: '#dcdde0' }}>Add New Record</h2>
+        <h2 style={{ color: 'white' }}>Add New Record</h2>
         <div style={{ marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', color: '#dcdde0' }}>Type: </label>
+          <label style={{ marginRight: '10px', color: 'white' }}>Type: </label>
           <select
             value={formState.type}
             onChange={(e) => setFormState({ ...formState, type: e.target.value })}
@@ -100,7 +116,7 @@ const RecordManagementPage: React.FC = () => {
           </select>
         </div>
         <div style={{ marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', color: '#dcdde0' }}>Amount: </label>
+          <label style={{ marginRight: '10px', color: 'white' }}>Amount: </label>
           <input
             type="number"
             value={formState.amount}
@@ -112,8 +128,8 @@ const RecordManagementPage: React.FC = () => {
           onClick={editMode ? handleEditRecord : handleAddRecord}
           style={{
             padding: '5px',
-            backgroundColor: '#35455D',
-            color: '#dcdde0',
+            backgroundColor: '#405a94',
+            color: 'white',
             border: 'none',
             borderRadius: '4px'
           }}
@@ -131,7 +147,7 @@ const RecordManagementPage: React.FC = () => {
       >
         <h2 style={{ color: '#dcdde0' }}>Filter Records</h2>
         <div style={{ marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', color: '#dcdde0' }}>Date: </label>
+          <label style={{ marginRight: '10px', color: 'white' }}>Date: </label>
           <input
             type="date"
             name="date"
@@ -141,7 +157,7 @@ const RecordManagementPage: React.FC = () => {
           />
         </div>
         <div style={{ marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', color: '#dcdde0' }}>Type: </label>
+          <label style={{ marginRight: '10px', color: 'white' }}>Type: </label>
           <select
             name="type"
             value={filter.type}
@@ -154,7 +170,7 @@ const RecordManagementPage: React.FC = () => {
           </select>
         </div>
         <div style={{ marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', color: '#dcdde0' }}>Amount: </label>
+          <label style={{ marginRight: '10px', color: 'white' }}>Amount: </label>
           <input
             type="number"
             name="amount"
@@ -169,10 +185,10 @@ const RecordManagementPage: React.FC = () => {
         <table style={{ width: '100%', marginBottom: '20px' }}>
           <thead>
             <tr>
-              <th style={{ minWidth: '150px', textAlign: 'left' }}>Date</th>
-              <th style={{ minWidth: '150px', textAlign: 'left' }}>Type</th>
-              <th style={{ minWidth: '150px', textAlign: 'left' }}>Amount</th>
-              <th style={{ minWidth: '200px', textAlign: 'left' }}>Actions</th>
+              <th style={{ minWidth: '150px', color: 'white', textAlign: 'left' }}>Date</th>
+              <th style={{ minWidth: '150px', color: 'white', textAlign: 'left' }}>Type</th>
+              <th style={{ minWidth: '150px', color: 'white', textAlign: 'left' }}>Amount</th>
+              <th style={{ minWidth: '200px', color: 'white', textAlign: 'left' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -182,10 +198,31 @@ const RecordManagementPage: React.FC = () => {
                 <td style={{ minWidth: '150px', textAlign: 'left' }}>{record.type}</td>
                 <td style={{ minWidth: '150px', textAlign: 'left' }}>${record.amount}</td>
                 <td style={{ minWidth: '200px', textAlign: 'left' }}>
-                  <button onClick={() => handleEditClick(record)} style={{ marginRight: '10px' }}>
+                  <button
+                    onClick={() => handleEditClick(record)}
+                    style={{
+                      marginRight: '10px',
+                      backgroundColor: '#405a94',
+                      color: 'white',
+                      border: 'none',
+                      padding: '5px 10px',
+                      borderRadius: '4px'
+                    }}
+                  >
                     Edit
                   </button>
-                  <button onClick={() => handleDeleteRecord(record.id)}>Delete</button>
+                  <button
+                    onClick={() => handleDeleteRecord(record.id)}
+                    style={{
+                      backgroundColor: '#7b6d4e',
+                      color: 'white',
+                      border: 'none',
+                      padding: '5px 10px',
+                      borderRadius: '4px'
+                    }}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}

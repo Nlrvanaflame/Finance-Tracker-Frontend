@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('')
@@ -28,6 +29,19 @@ const LoginPage: React.FC = () => {
         alignItems: 'center'
       }}
     >
+      <Link
+        to="/"
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          fontSize: '2em',
+          color: '#dcdde0',
+          textDecoration: 'none'
+        }}
+      >
+        ←
+      </Link>
       <div
         style={{
           width: '400px',

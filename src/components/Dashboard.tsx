@@ -2,6 +2,7 @@ import React from 'react'
 import { Chart } from 'chart.js'
 import { PieController, ArcElement, Tooltip, Title } from 'chart.js'
 import { Pie } from 'react-chartjs-2'
+import { Link } from 'react-router-dom'
 
 Chart.register(PieController, ArcElement, Tooltip, Title)
 
@@ -39,6 +40,19 @@ const Dashboard: React.FC = () => {
         alignItems: 'center'
       }}
     >
+      <Link
+        to="/"
+        style={{
+          position: 'absolute',
+          top: '20px',
+          left: '20px',
+          fontSize: '2em',
+          color: '#dcdde0',
+          textDecoration: 'none'
+        }}
+      >
+        ←
+      </Link>
       <h1 style={{ padding: '45px', color: 'white', fontWeight: 'bold', fontSize: '3em' }}>
         Dashboard
       </h1>

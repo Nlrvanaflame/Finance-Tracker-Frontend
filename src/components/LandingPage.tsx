@@ -21,13 +21,13 @@ const LandingPage: React.FC = () => {
           backgroundColor: '#35455D'
         }}
       >
-        <h1 style={{ color: '#dcdde0', fontWeight: 'bold' }}>Finance Tracker</h1>
+        <h1 style={{ color: 'white', fontWeight: 'bold' }}>Finance Tracker</h1>
         <nav style={{ display: 'flex', gap: '20px' }}>
           <div
             style={{
               backgroundColor: '#7b6d4e',
               padding: '10px',
-              borderRadius: '12px' // Added for rounded edges
+              borderRadius: '12px'
             }}
           >
             <Link
@@ -41,7 +41,7 @@ const LandingPage: React.FC = () => {
             style={{
               backgroundColor: '#405a94',
               padding: '10px',
-              borderRadius: '12px' // Added for rounded edges
+              borderRadius: '12px'
             }}
           >
             <Link
@@ -66,7 +66,7 @@ const LandingPage: React.FC = () => {
       >
         <section
           style={{
-            backgroundColor: '#35455D', // Adjusted section background color
+            backgroundColor: '#35455D',
             padding: '20px',
             borderRadius: '8px',
             width: '45%',
@@ -78,18 +78,18 @@ const LandingPage: React.FC = () => {
             style={{ textDecoration: 'none', display: 'block', height: '100%' }}
           >
             <div style={{ textAlign: 'center', cursor: 'pointer' }}>
-              <h2 style={{ color: '#dcdde0', fontWeight: 'bold' }}>Financial Overview</h2>
-              <p style={{ color: '#dcdde0', fontStyle: 'italic' }}>
+              <h2 style={{ color: 'white', fontWeight: 'bold' }}>Financial Overview</h2>
+              <p style={{ color: 'white', fontStyle: 'italic' }}>
                 Get a quick snapshot of your financial status at a glance.
               </p>
-              <p style={{ color: '#dcdde0', fontWeight: 'bold' }}>Learn More</p>
+              <p style={{ color: 'white', fontWeight: 'bold' }}>Learn More</p>
             </div>
           </Link>
         </section>
 
         <section
           style={{
-            backgroundColor: '#35455D', // Adjusted section background color
+            backgroundColor: '#35455D',
             padding: '20px',
             borderRadius: '8px',
             width: '45%',
@@ -101,18 +101,18 @@ const LandingPage: React.FC = () => {
             style={{ textDecoration: 'none', display: 'block', height: '100%' }}
           >
             <div style={{ textAlign: 'center', cursor: 'pointer' }}>
-              <h2 style={{ color: '#dcdde0', fontWeight: 'bold' }}>Records Management</h2>
-              <p style={{ color: '#dcdde0', fontStyle: 'italic' }}>
+              <h2 style={{ color: 'white', fontWeight: 'bold' }}>Records Management</h2>
+              <p style={{ color: 'white', fontStyle: 'italic' }}>
                 Manage and keep track of your financial records easily.
               </p>
-              <p style={{ color: '#dcdde0', fontWeight: 'bold' }}>Learn More</p>
+              <p style={{ color: 'white', fontWeight: 'bold' }}>Learn More</p>
             </div>
           </Link>
         </section>
       </main>
 
       <footer style={{ backgroundColor: '#35455D', padding: '20px', textAlign: 'center' }}>
-        <p style={{ color: '#dcdde0', fontStyle: 'italic' }}>© 2023 Finance Tracker</p>
+        <p style={{ color: 'white', fontStyle: 'italic' }}>© 2023 Finance Tracker</p>
       </footer>
     </div>
   )
