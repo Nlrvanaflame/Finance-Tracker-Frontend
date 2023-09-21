@@ -21,7 +21,7 @@ export const useLoginUser = () => {
 };
 
 export const useUpdateUser = () => {
-  return useMutation((data: { id: string; data: Partial<LoginUser> }) => updateUser(data.id, data.data), {
+  return useMutation((data: { id: string; data: 'email'|'hashed_password' }) => updateUser(data.id, data.data), {
     onSuccess: () => {
       queryClient.invalidateQueries('user');
     },

@@ -10,7 +10,7 @@ const LandingPage: React.FC = () => {
         minHeight: '100vh',
         backgroundColor: '#4d5b7a',
         fontFamily: 'Arial, sans-serif',
-        color: '#dcdde0' // Setting a default text color to match the new scheme
+        color: '#dcdde0'
       }}
     >
       <header
@@ -18,23 +18,39 @@ const LandingPage: React.FC = () => {
           display: 'flex',
           justifyContent: 'space-between',
           padding: '20px',
-          backgroundColor: '#35455D' // Adjusted header background color
+          backgroundColor: '#35455D'
         }}
       >
         <h1 style={{ color: '#dcdde0', fontWeight: 'bold' }}>Finance Tracker</h1>
         <nav style={{ display: 'flex', gap: '20px' }}>
-          <Link
-            to="/register"
-            style={{ color: '#dcdde0', textDecoration: 'none', fontWeight: 'bold' }}
+          <div
+            style={{
+              backgroundColor: '#7b6d4e',
+              padding: '10px',
+              borderRadius: '12px' // Added for rounded edges
+            }}
           >
-            Register
-          </Link>
-          <Link
-            to="/login"
-            style={{ color: '#dcdde0', textDecoration: 'none', fontWeight: 'bold' }}
+            <Link
+              to="/register"
+              style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}
+            >
+              Register
+            </Link>
+          </div>
+          <div
+            style={{
+              backgroundColor: '#405a94',
+              padding: '10px',
+              borderRadius: '12px' // Added for rounded edges
+            }}
           >
-            Login
-          </Link>
+            <Link
+              to="/login"
+              style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}
+            >
+              Login
+            </Link>
+          </div>
         </nav>
       </header>
 

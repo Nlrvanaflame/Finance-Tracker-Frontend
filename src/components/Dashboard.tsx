@@ -20,8 +20,8 @@ const data = {
   datasets: [
     {
       data: [dummyData.totalIncome, dummyData.totalExpenses],
-      backgroundColor: ['#BFD4DB', '#a18fbf'],
-      hoverBackgroundColor: ['#BFD4DB', '#a18fbf']
+      backgroundColor: ['#35455D', '#5D3635'],
+      hoverBackgroundColor: ['#35455D', '#5D3635']
     }
   ]
 }
@@ -39,38 +39,40 @@ const Dashboard: React.FC = () => {
         alignItems: 'center'
       }}
     >
-      <h1 style={{ padding: '45px', color: '#dcdde0', fontWeight: 'bold', fontSize: '3em' }}>
+      <h1 style={{ padding: '45px', color: 'white', fontWeight: 'bold', fontSize: '3em' }}>
         Dashboard
       </h1>
       <div
         style={{
           display: 'flex',
-          backgroundColor: '#f5f6fa',
+          backgroundColor: 'white',
           borderRadius: '8px',
           padding: '20px',
           margin: '20px',
           boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)',
           width: '65%', // Increase width to cover more of the page
-          color: '#35455D' // Adjust text color to white for better visibility on navy background
+          color: 'black' // Adjust text color to white for better visibility on navy background
         }}
       >
         <div style={{ flex: 1, fontSize: '1.6em' }}>
-          <h2 style={{ fontWeight: 'bold', color: '#35455D' }}>Financial Overview</h2>
+          <h2 style={{ fontWeight: 'bold', color: 'black' }}>Financial Overview</h2>
           <p>
             Total Income:{' '}
-            <span style={{ color: '#35455D', fontWeight: 'bold' }}>${dummyData.totalIncome}</span>
+            <span style={{ color: 'black', fontWeight: 'bold' }}>${dummyData.totalIncome}</span>
           </p>
           <p>
             Total Expenses:{' '}
-            <span style={{ color: '#35455D', fontWeight: 'bold' }}>${dummyData.totalExpenses}</span>
+            <span style={{ color: 'black', fontWeight: 'bold' }}>${dummyData.totalExpenses}</span>
           </p>
           <p>
             Balance:{' '}
-            <span style={{ color: '#35455D', fontWeight: 'bold' }}>${dummyData.balance}</span>
+            <span style={{ color: 'black', fontWeight: 'bold' }}>${dummyData.balance}</span>
           </p>
         </div>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <h3 style={{ fontWeight: 'bold', color: '#35455D' }}>Income vs Expenses</h3>
+          <h3 style={{ fontWeight: 'normal', color: 'black', fontSize: '1.5em' }}>
+            Income vs Expenses
+          </h3>
           <Pie data={data} />
         </div>
       </div>
