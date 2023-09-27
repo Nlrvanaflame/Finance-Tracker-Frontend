@@ -60,7 +60,7 @@ const LoginPage: React.FC = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              style={{ width: '100%' }}
+              style={{ width: '100%', color: 'black' }}
             />
           </div>
           <div style={{ marginTop: '20px', marginBottom: '20px' }}>
@@ -70,7 +70,7 @@ const LoginPage: React.FC = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              style={{ width: '100%' }}
+              style={{ width: '100%', color: 'black' }}
             />
           </div>
           {error && <p style={{ color: 'red' }}>{error}</p>}
