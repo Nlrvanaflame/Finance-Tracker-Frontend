@@ -1,9 +1,10 @@
 export interface User {
     id?: string;
     username: string;
-    hashed_password: string;
+    password: string;
     email: string;
     date_joined?: Date;
   }
 
-  export type LoginUser = Pick<User, 'email'|'hashed_password'>
+  export type RegisterUser = Pick<User , 'username' | 'password' |'email'>
+  export type LoginUser = Pick<User, 'email'|'password'>

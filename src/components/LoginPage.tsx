@@ -1,22 +1,31 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useLoginUser } from '../hooks/userHooks/useUserMutations'
+import queryClient from '..'
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const loginUser = useLoginUser()
+
+  const navigate = useNavigate()
 
   const handleLogin = () => {
-    // Here you would generally call your API to perform authentication
-    if (email === 'user@example.com' && password === 'password123') {
-      setError('')
-      alert('Login successful')
-      // Navigate to the dashboard page (using a tool like react-router-dom)
-    } else {
-      setError('Invalid email or password')
-    }
+    loginUser.mutate(
+      { email, password },
+      {
+        onSuccess: (data) => {
+          if (data) {
+            alert('Login successful')
+            navigate('/')
+          }
+        },
+        onError: (error) => {
+          console.error('There was an error!', error)
+        }
+      }
+    )
   }
-
   return (
     <div
       style={{
@@ -45,7 +54,7 @@ const LoginPage: React.FC = () => {
       <div
         style={{
           width: '400px',
-          height: '350px', // Adjusted the height to fit the fewer fields
+          height: '350px',
           background: 'linear-gradient(180deg, #35455D, #405a94)',
           padding: '30px',
           borderRadius: '8px'
@@ -73,9 +82,10 @@ const LoginPage: React.FC = () => {
               style={{ width: '100%', color: 'black' }}
             />
           </div>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {loginUser.isError && <p style={{ color: 'red' }}>Invalid email or password</p>}
           <button
             onClick={handleLogin}
+            disabled={loginUser.isLoading}
             style={{
               display: 'block',
               margin: '0 auto',
@@ -96,7 +106,7 @@ const LoginPage: React.FC = () => {
               (e.currentTarget.style.background = 'linear-gradient(180deg, #405a94, #35455D)')
             }
           >
-            Login
+            {loginUser.isLoading ? 'Loading...' : 'Login'}
           </button>
         </form>
       </div>

@@ -1,20 +1,35 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { registerUser } from '../services/routes'
 
 const RegisterPage: React.FC = () => {
   const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
 
-  const handleRegister = () => {
-    // Here you would generally call your API to perform registration
-    if (password === confirmPassword) {
-      setError('')
-      alert('Registration successful')
-      // Navigate to the dashboard page (using a tool like react-router-dom)
-    } else {
+  const navigate = useNavigate()
+
+  const handleRegister = async () => {
+    if (password !== confirmPassword) {
       setError('Passwords do not match')
+      return
+    }
+
+    try {
+      const response = await registerUser({ email, username, password })
+      console.log(response.data)
+
+      if (response.data.id) {
+        alert('Registration successful')
+        navigate('/')
+      } else {
+        setError(response.data.message || 'Registration failed')
+      }
+    } catch (error) {
+      console.error('There was an error!', error)
+      setError('There was an error registering your account. Please try again.')
     }
   }
 
@@ -46,7 +61,7 @@ const RegisterPage: React.FC = () => {
       <div
         style={{
           width: '400px',
-          height: '400px',
+          height: '475px',
           background: 'linear-gradient(180deg, #35455D, #405a94)',
           padding: '30px',
           borderRadius: '8px'
@@ -62,6 +77,17 @@ const RegisterPage: React.FC = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              required
+              style={{ width: '100%', color: 'black' }}
+            />
+          </div>
+
+          <div style={{ marginTop: '20px', marginBottom: '20px' }}>
+            <label style={{ position: 'relative', top: '-4px', color: 'white' }}>Username: </label>
+            <input
+              type="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               style={{ width: '100%', color: 'black' }}
             />
@@ -94,7 +120,7 @@ const RegisterPage: React.FC = () => {
             onClick={handleRegister}
             style={{
               position: 'relative',
-              top: '17px',
+              top: '5px',
               display: 'block',
               margin: '0 auto',
               padding: '12px 24px',

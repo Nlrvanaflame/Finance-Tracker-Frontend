@@ -1,7 +1,6 @@
 import {  useMutation } from 'react-query';
 import { registerUser, loginUser, logoutUser, updateUser } from '../../services/routes';
 import queryClient from '../..';
-import { LoginUser } from '../../models/user';
 
 
 export const useRegisterUser = () => {
@@ -19,6 +18,8 @@ export const useLoginUser = () => {
     },
   });
 };
+
+
 
 export const useUpdateUser = () => {
   return useMutation((data: { id: string; data: 'email'|'hashed_password' }) => updateUser(data.id, data.data), {
