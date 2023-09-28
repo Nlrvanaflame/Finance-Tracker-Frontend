@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLoginUser } from '../hooks/userHooks/useUserMutations'
-import queryClient from '..'
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('')
@@ -15,9 +14,11 @@ const LoginPage: React.FC = () => {
       { email, password },
       {
         onSuccess: (data) => {
-          if (data) {
-            alert('Login successful')
+          if (data?.token) {
+            localStorage.setItem('token', data.token) // This line saves the token to localStorage
             navigate('/')
+          } else {
+            console.error('Token not received')
           }
         },
         onError: (error) => {
@@ -26,6 +27,7 @@ const LoginPage: React.FC = () => {
       }
     )
   }
+
   return (
     <div
       style={{
@@ -106,7 +108,7 @@ const LoginPage: React.FC = () => {
               (e.currentTarget.style.background = 'linear-gradient(180deg, #405a94, #35455D)')
             }
           >
-            {loginUser.isLoading ? 'Loading...' : 'Login'}
+            Login
           </button>
         </form>
       </div>

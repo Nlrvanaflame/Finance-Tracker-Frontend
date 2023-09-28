@@ -1,4 +1,4 @@
-import {  useMutation } from 'react-query';
+import {  useMutation, useQueryClient } from 'react-query';
 import { registerUser, loginUser, logoutUser, updateUser } from '../../services/routes';
 import queryClient from '../..';
 
@@ -12,12 +12,20 @@ export const useRegisterUser = () => {
 };
 
 export const useLoginUser = () => {
+  const queryClient = useQueryClient();
+
   return useMutation(loginUser, {
-    onSuccess: () => {
-      queryClient.invalidateQueries('user');
+    onSuccess: async(data: any) => {
+      if (data?.token) {
+        localStorage.setItem('token', data.token);  // Save token to localStorage
+        queryClient.invalidateQueries('user');  // Invalidate user query to refetch the user data
+      } else {
+        console.error('Token not received');
+      }
     },
   });
 };
+
 
 
 

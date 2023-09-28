@@ -1,7 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useUser } from '../hooks/userHooks/useGetUser'
 
 const LandingPage: React.FC = () => {
+  const token = localStorage.getItem('token')
+  const { data: user, isLoading } = useUser()
   return (
     <div
       style={{
@@ -23,34 +26,55 @@ const LandingPage: React.FC = () => {
       >
         <h1 style={{ color: 'white', fontWeight: 'bold' }}>Finance Tracker</h1>
         <nav style={{ display: 'flex', gap: '20px' }}>
-          <div
-            style={{
-              backgroundColor: '#7b6d4e',
-              padding: '10px',
-              borderRadius: '12px'
-            }}
-          >
-            <Link
-              to="/register"
-              style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}
-            >
-              Register
-            </Link>
-          </div>
-          <div
-            style={{
-              backgroundColor: '#405a94',
-              padding: '10px',
-              borderRadius: '12px'
-            }}
-          >
-            <Link
-              to="/login"
-              style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}
-            >
-              Login
-            </Link>
-          </div>
+          {isLoading ? (
+            <span>Loading...</span>
+          ) : token && user ? (
+            <div style={{ color: 'white', display: 'flex', alignItems: 'center' }}>
+              <span>Hello, {user.username} !</span>
+              <Link
+                to="/account-management"
+                style={{
+                  marginLeft: '20px',
+                  color: 'white',
+                  textDecoration: 'none',
+                  fontWeight: 'bold'
+                }}
+              >
+                Manage Account
+              </Link>
+            </div>
+          ) : (
+            <>
+              <div
+                style={{
+                  backgroundColor: '#7b6d4e',
+                  padding: '10px',
+                  borderRadius: '12px'
+                }}
+              >
+                <Link
+                  to="/register"
+                  style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}
+                >
+                  Register
+                </Link>
+              </div>
+              <div
+                style={{
+                  backgroundColor: '#405a94',
+                  padding: '10px',
+                  borderRadius: '12px'
+                }}
+              >
+                <Link
+                  to="/login"
+                  style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold' }}
+                >
+                  Login
+                </Link>
+              </div>
+            </>
+          )}
         </nav>
       </header>
 
