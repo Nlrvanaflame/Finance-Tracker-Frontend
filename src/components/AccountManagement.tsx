@@ -1,16 +1,16 @@
 import React, { useState } from 'react'
+import { useUser } from '../hooks/userHooks/useGetUser'
+import { useUpdateUser } from '../hooks/userHooks/useUserMutations'
+import { useNavigate } from 'react-router'
 
-const AccountManagementPage = () => {
-  const [user, setUser] = useState({
-    id: '12345',
-    email: 'dummy@example.com',
-    password: 'dummy123'
-  })
-
+const AccountManagementPage: React.FC = () => {
+  const { data: user, isLoading } = useUser()
   const [formState, setFormState] = useState({
     email: '',
     password: ''
   })
+  const navigate = useNavigate()
+  const updateUser = useUpdateUser()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -21,25 +21,39 @@ const AccountManagementPage = () => {
   }
 
   const handleSubmit = () => {
-    if (formState.email) {
-      setUser((prevState) => ({
-        ...prevState,
-        email: formState.email
-      }))
+    if (formState.email || formState.password) {
+      if (user && user.id) {
+        updateUser.mutate({
+          id: user.id,
+          data: {
+            email: formState.email,
+            hashed_password: formState.password
+          }
+        })
+        navigate('/login')
+      } else {
+        console.error('User ID not found')
+      }
     }
-    if (formState.password) {
-      setUser((prevState) => ({
-        ...prevState,
-        password: formState.password
-      }))
-    }
-    alert('Profile updated successfully!')
   }
 
+  if (isLoading) return <div>Loading...</div>
+
   return (
-    <div>
+    <div
+      style={{
+        fontFamily: 'Arial, sans-serif',
+        backgroundColor: '#4d5b7a',
+        color: '#dcdde0',
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
       <h1>Account Management</h1>
-      <div>
+      <div style={{ margin: '10px' }}>
         <label>
           Email:
           <input
@@ -47,11 +61,12 @@ const AccountManagementPage = () => {
             name="email"
             value={formState.email}
             onChange={handleChange}
-            placeholder={user.email}
+            placeholder={user?.email || ''}
+            style={{ marginLeft: '10px', padding: '5px' }}
           />
         </label>
       </div>
-      <div>
+      <div style={{ margin: '10px' }}>
         <label>
           Password:
           <input
@@ -60,10 +75,23 @@ const AccountManagementPage = () => {
             value={formState.password}
             onChange={handleChange}
             placeholder="New password"
+            style={{ marginLeft: '10px', padding: '5px' }}
           />
         </label>
       </div>
-      <button onClick={handleSubmit}>Update Profile</button>
+      <button
+        onClick={handleSubmit}
+        style={{
+          padding: '10px 20px',
+          color: '#dcdde0',
+          backgroundColor: '#35455D',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer'
+        }}
+      >
+        Update Profile
+      </button>
     </div>
   )
 }

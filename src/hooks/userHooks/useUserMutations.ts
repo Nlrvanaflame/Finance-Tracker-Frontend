@@ -30,12 +30,17 @@ export const useLoginUser = () => {
 
 
 export const useUpdateUser = () => {
-  return useMutation((data: { id: string; data: 'email'|'hashed_password' }) => updateUser(data.id, data.data), {
-    onSuccess: () => {
-      queryClient.invalidateQueries('user');
-    },
-  });
-}
+  return useMutation(
+    (data: { id: string; data: { email?: string; hashed_password?: string } }) => 
+      updateUser(data.id, data.data), 
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('user');
+      },
+    }
+  );
+};
+
 
 export const useLogoutUser = () => {
     return useMutation(logoutUser, {

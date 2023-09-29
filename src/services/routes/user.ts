@@ -4,21 +4,21 @@ import { LoginUser, RegisterUser, User } from "../../models/user";
 
 export const registerUser = (data:RegisterUser) => api.post("/register",data)
 export const loginUser = (data: LoginUser) => {
-    return api.post("/login", data)
-      .then(response => {
-        if (response?.data?.token) {
-          return response.data;
-        } else {
-          throw new Error('Token not found in response');
-        }
-      })
-      .catch(error => {
-        console.error('Error in loginUser service:', error);
-      });
-  }
-  
+  return api.post("/login", data)
+    .then(response => {
+      if (response?.data?.token) {
+        return response.data;
+      } else {
+        throw new Error('Token not found in response');
+      }
+    })
+    .catch(error => {
+      console.error('Error in loginUser service:', error);
+    });
+}
+
 export const logoutUser = ()=> api.get<User>("/logout")
-export const updateUser =(id:string, data: 'email'|'hashed_password')=> api.put(`/users/${id}`,data)
+export const updateUser =(id:string, data: { email?: string; hashed_password?: string })=> api.put(`/users/${id}`,data)
 export const getUserFromToken = async () => {
     const token = localStorage.getItem('token');
     

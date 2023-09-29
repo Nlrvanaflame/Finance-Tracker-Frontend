@@ -1,10 +1,15 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useUser } from '../hooks/userHooks/useGetUser'
 
 const LandingPage: React.FC = () => {
   const token = localStorage.getItem('token')
   const { data: user, isLoading } = useUser()
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    window.location.reload()
+  }
   return (
     <div
       style={{
@@ -42,6 +47,20 @@ const LandingPage: React.FC = () => {
               >
                 Manage Account
               </Link>
+              <button
+                onClick={handleLogout}
+                style={{
+                  marginLeft: '20px',
+                  color: 'white',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  fontSize: 'inherit'
+                }}
+              >
+                Logout
+              </button>
             </div>
           ) : (
             <>
