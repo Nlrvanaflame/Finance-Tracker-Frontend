@@ -23,14 +23,22 @@ const AccountManagementPage: React.FC = () => {
   const handleSubmit = () => {
     if (formState.email || formState.password) {
       if (user && user.id) {
-        updateUser.mutate({
-          id: user.id,
-          data: {
-            email: formState.email,
-            hashed_password: formState.password
+        updateUser.mutate(
+          {
+            id: user.id,
+            email: formState.email, // Changed this line
+            password: formState.password // And this line
+          },
+          {
+            onSuccess: () => {
+              console.log('Update successful')
+              navigate('/login') // Moved this line inside onSuccess to only redirect on success
+            },
+            onError: (error) => {
+              console.error('There was an error!', error)
+            }
           }
-        })
-        navigate('/login')
+        )
       } else {
         console.error('User ID not found')
       }

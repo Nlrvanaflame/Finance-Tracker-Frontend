@@ -3,9 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useUser } from '../hooks/userHooks/useGetUser'
 
 const LandingPage: React.FC = () => {
-  const token = localStorage.getItem('token')
   const { data: user, isLoading } = useUser()
-
   const handleLogout = () => {
     localStorage.removeItem('token')
     window.location.reload()
@@ -33,7 +31,7 @@ const LandingPage: React.FC = () => {
         <nav style={{ display: 'flex', gap: '20px' }}>
           {isLoading ? (
             <span>Loading...</span>
-          ) : token && user ? (
+          ) : user ? (
             <div style={{ color: 'white', display: 'flex', alignItems: 'center' }}>
               <span>Hello, {user.username} !</span>
               <Link

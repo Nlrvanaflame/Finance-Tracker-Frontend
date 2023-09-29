@@ -1,5 +1,5 @@
 import api from "../api"
-import { LoginUser, RegisterUser, User } from "../../models/user";
+import { LoginUser, RegisterUser, UpdateUserData, User } from "../../models/user";
 
 
 export const registerUser = (data:RegisterUser) => api.post("/register",data)
@@ -18,7 +18,24 @@ export const loginUser = (data: LoginUser) => {
 }
 
 export const logoutUser = ()=> api.get<User>("/logout")
-export const updateUser =(id:string, data: { email?: string; hashed_password?: string })=> api.put(`/users/${id}`,data)
+
+
+export const updateUser = (data: UpdateUserData) => {
+  const token = localStorage.getItem('token');
+
+  if (!token) {
+    throw new Error('Token not found');
+  }
+
+  
+
+  return api.put(`/users`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+}
+
 export const getUserFromToken = async () => {
     const token = localStorage.getItem('token');
     
