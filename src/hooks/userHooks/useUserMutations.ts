@@ -32,8 +32,7 @@ export const useLoginUser = () => {
 
 export const useUpdateUser = () => {
   return useMutation(
-    (data: UpdateUserData) => 
-      updateUser(data), 
+    (data: { id: string; email: string; password: string }) => updateUser(data),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('user');
@@ -41,6 +40,8 @@ export const useUpdateUser = () => {
     }
   );
 };
+
+
 
 
 export const useLogoutUser = () => {

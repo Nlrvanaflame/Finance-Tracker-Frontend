@@ -8,8 +8,4 @@ export interface User {
 
   export type RegisterUser = Pick<User , 'username' | 'password' |'email'>
   export type LoginUser = Pick<User, 'email'|'password'>
-  export type UpdateUserData = {
-    id: string;
-    email?: string;
-    password?: string;  
-  };
+  export type UpdateUserData = Pick <User,'id' | 'email' | 'password'>

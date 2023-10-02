@@ -1,80 +1,92 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
-
-interface Record {
-  id: number
-  date: string
-  type: string
-  amount: number
-}
+import React, { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { Formik, Form, Field } from 'formik'
+import { useGetRecord } from '../hooks/financeHooks/useGetRecord'
+import { useFinanceMutations } from '../hooks/financeHooks/useRecordMutations'
+import { useUser } from '../hooks/userHooks/useGetUser'
 
 const RecordManagementPage: React.FC = () => {
-  const [records, setRecords] = useState<Record[]>([
-    { id: 1, date: '2023-09-01', type: 'Income', amount: 1000 },
-    { id: 2, date: '2023-09-05', type: 'Expense', amount: 500 }
-  ])
+  const { data: recordsResponse, isLoading, isError } = useGetRecord()
+  const { data: user } = useUser()
+  const createRecord = useFinanceMutations().useCreateRecord()
+  const editRecord = useFinanceMutations().useEditRecord()
+  const deleteRecord = useFinanceMutations().useDeleteRecord()
 
-  const [formState, setFormState] = useState({ date: '', type: '', amount: '' })
-  const [filter, setFilter] = useState({ date: '', type: '', amount: '' })
+  // const [filter, setFilter] = useState({ date: '', type: '', amount: '' })
   const [editMode, setEditMode] = useState(false)
-  const [currentRecordId, setCurrentRecordId] = useState<number | null>(null)
+  const [editingRecord, setEditingRecord] = useState<any>(null)
 
-  const handleAddRecord = () => {
-    const currentDate = new Date()
-    const formattedDate = `${currentDate.getFullYear()}-${String(
-      currentDate.getMonth() + 1
-    ).padStart(2, '0')}-${String(currentDate.getDate()).padStart(2, '0')}`
+  const navigate = useNavigate()
 
-    const newRecord: Record = {
-      id: records.length + 1,
-      date: formattedDate,
-      type: formState.type,
-      amount: parseFloat(formState.amount)
+  useEffect(() => {
+    if (!user) {
+      navigate('/login')
     }
-
-    if (newRecord.amount > 0) {
-      setRecords([...records, newRecord])
-      setFormState({ date: '', type: '', amount: '' })
-    } else {
-      alert('Amount must be positive')
-    }
-  }
-
-  const handleEditRecord = () => {
-    const newRecords = records.map((record) => {
-      if (record.id === currentRecordId) {
-        return { ...record, ...formState, amount: parseFloat(formState.amount) }
-      }
-      return record
-    })
-    setRecords(newRecords)
-    setEditMode(false)
-    setCurrentRecordId(null)
-    setFormState({ date: '', type: '', amount: '' })
-  }
-
-  const handleDeleteRecord = (id: number) => {
-    setRecords(records.filter((record) => record.id !== id))
-  }
-
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFilter({ ...filter, [name]: value })
-  }
-
-  const handleEditClick = (record: Record) => {
-    setFormState({ ...record, amount: record.amount.toString() })
-    setEditMode(true)
-    setCurrentRecordId(record.id)
-  }
-
-  const filteredRecords = records.filter((record) => {
-    return (
-      (filter.date === '' || record.date.includes(filter.date)) &&
-      (filter.type === '' || record.type.includes(filter.type)) &&
-      (filter.amount === '' || record.amount.toString().includes(filter.amount))
-    )
   })
+
+  // const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  //   const { name, value } = e.target
+  //   setFilter({ ...filter, [name]: value })
+  // }
+
+  // const filteredRecords = records.filter((record) => {
+  //   return (
+  //     (filter.date === '' || record.record_date.includes(filter.date)) &&
+  //     (filter.type === '' || record.type.includes(filter.type)) &&
+  //     (filter.amount === '' || record.amount.toString().includes(filter.amount))
+  //   )
+  // })
+
+  if (isLoading || !user) {
+    return <div>Loading...</div>
+  }
+
+  if (isError || !recordsResponse || !user.id) {
+    return <div>Error loading data. Please try again later.</div>
+  }
+
+  const records = recordsResponse.data
+
+  const handleAddRecord = (values: any, resetForm: Function) => {
+    if (user && user.id) {
+      createRecord.mutate({
+        user_id: user.id,
+        type: values.type,
+        amount: parseFloat(values.amount),
+        description: values.description,
+        record_date: new Date()
+      })
+
+      resetForm()
+
+      setEditMode(false)
+      setEditingRecord(null)
+    }
+  }
+
+  const handleEditRecord = (id: string, values: any, resetForm: Function) => {
+    if (user && user.id) {
+      editRecord.mutate({
+        id,
+        data: {
+          user_id: user.id,
+          type: values.type,
+          amount: parseFloat(values.amount),
+          description: values.description
+        }
+      })
+      resetForm()
+    }
+  }
+
+  const handleDeleteRecord = (id: string) => {
+    deleteRecord.mutate(id)
+  }
+
+  const handleEditClick = (record: any) => {
+    setEditMode(true)
+    setEditingRecord(record)
+  }
 
   return (
     <div
@@ -93,141 +105,120 @@ const RecordManagementPage: React.FC = () => {
       >
         ←
       </Link>
+
       <h1 style={{ color: 'white', textAlign: 'center', fontSize: '2em' }}>Record Management</h1>
-      <div
-        style={{
-          backgroundColor: '#4d5b7a',
-          padding: '20px',
-          borderRadius: '8px',
-          margin: '20px 0'
+
+      <Formik
+        initialValues={editMode ? editingRecord : { type: '', amount: '', description: '' }}
+        onSubmit={(values, { setSubmitting, resetForm }) => {
+          editMode
+            ? handleEditRecord(editingRecord.id, values, resetForm)
+            : handleAddRecord(values, resetForm)
+          setSubmitting(false)
         }}
       >
-        <h2 style={{ color: 'white' }}>Add New Record</h2>
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', color: 'white' }}>Type: </label>
-          <select
-            value={formState.type}
-            onChange={(e) => setFormState({ ...formState, type: e.target.value })}
-            style={{ padding: '5px', color: '#35455D' }}
+        {({ isSubmitting }) => (
+          <Form
+            style={{
+              backgroundColor: '#4d5b7a',
+              padding: '20px',
+              borderRadius: '8px',
+              margin: '20px 0'
+            }}
           >
-            <option value="">Select Type</option>
-            <option value="Income">Income</option>
-            <option value="Expense">Expense</option>
-          </select>
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', color: 'white' }}>Amount: </label>
-          <input
-            type="number"
-            value={formState.amount}
-            onChange={(e) => setFormState({ ...formState, amount: e.target.value })}
-            style={{ padding: '5px', color: '#35455D' }}
-          />
-        </div>
-        <button
-          onClick={editMode ? handleEditRecord : handleAddRecord}
-          style={{
-            padding: '5px',
-            backgroundColor: '#405a94',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px'
-          }}
-        >
-          {editMode ? 'Edit Record' : 'Add Record'}
-        </button>
-      </div>
-      <div
-        style={{
-          backgroundColor: '#4d5b7a',
-          padding: '20px',
-          borderRadius: '8px',
-          margin: '20px 0'
-        }}
-      >
-        <h2 style={{ color: '#dcdde0' }}>Filter Records</h2>
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', color: 'white' }}>Date: </label>
-          <input
-            type="date"
-            name="date"
-            value={filter.date}
-            onChange={handleFilterChange}
-            style={{ padding: '5px', color: '#35455D' }}
-          />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', color: 'white' }}>Type: </label>
-          <select
-            name="type"
-            value={filter.type}
-            onChange={handleFilterChange}
-            style={{ padding: '5px', color: '#35455D' }}
-          >
-            <option value="">All</option>
-            <option value="Income">Income</option>
-            <option value="Expense">Expense</option>
-          </select>
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <label style={{ marginRight: '10px', color: 'white' }}>Amount: </label>
-          <input
-            type="number"
-            name="amount"
-            value={filter.amount}
-            onChange={handleFilterChange}
-            style={{ padding: '5px', color: '#35455D' }}
-          />
-        </div>
-      </div>
+            <h2 style={{ color: 'white' }}>Add New Record</h2>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ marginRight: '10px', color: 'white' }}>Type: </label>
+              <Field as="select" name="type" style={{ padding: '5px', color: '#35455D' }}>
+                <option value="" label="Select type" />
+                <option value="income" label="Income" />
+                <option value="expense" label="Expense" />
+              </Field>
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ marginRight: '10px', color: 'white' }}>Amount: </label>
+              <Field name="amount" type="number" style={{ padding: '5px', color: '#35455D' }} />
+            </div>
+
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ marginRight: '10px', color: 'white' }}>Description: </label>
+              <Field name="description" type="text" style={{ padding: '5px', color: '#35455D' }} />
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              style={{
+                padding: '10px 20px',
+                borderRadius: '5px',
+                border: 'none',
+                color: '#fff',
+                backgroundColor: '#405a94'
+              }}
+            >
+              {editMode ? 'Edit Record' : 'Add Record'}
+            </button>
+          </Form>
+        )}
+      </Formik>
+
       <div style={{ backgroundColor: '#4d5b7a', padding: '20px', borderRadius: '8px' }}>
         <h2 style={{ color: '#dcdde0' }}>Record List</h2>
-        <table style={{ width: '100%', marginBottom: '20px' }}>
-          <thead>
-            <tr>
-              <th style={{ minWidth: '150px', color: 'white', textAlign: 'left' }}>Date</th>
-              <th style={{ minWidth: '150px', color: 'white', textAlign: 'left' }}>Type</th>
-              <th style={{ minWidth: '150px', color: 'white', textAlign: 'left' }}>Amount</th>
-              <th style={{ minWidth: '200px', color: 'white', textAlign: 'left' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredRecords.map((record) => (
-              <tr key={record.id}>
-                <td style={{ minWidth: '150px', textAlign: 'left' }}>{record.date}</td>
-                <td style={{ minWidth: '150px', textAlign: 'left' }}>{record.type}</td>
-                <td style={{ minWidth: '150px', textAlign: 'left' }}>${record.amount}</td>
-                <td style={{ minWidth: '200px', textAlign: 'left' }}>
-                  <button
-                    onClick={() => handleEditClick(record)}
-                    style={{
-                      marginRight: '10px',
-                      backgroundColor: '#405a94',
-                      color: 'white',
-                      border: 'none',
-                      padding: '5px 10px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteRecord(record.id)}
-                    style={{
-                      backgroundColor: '#7b6d4e',
-                      color: 'white',
-                      border: 'none',
-                      padding: '5px 10px',
-                      borderRadius: '4px'
-                    }}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+        {records && records.length > 0 ? (
+          records.map((record) => (
+            <div
+              key={record.id}
+              style={{
+                padding: '10px',
+                backgroundColor: '#5a678a',
+                borderRadius: '5px',
+                margin: '10px 0',
+                color: 'white'
+              }}
+            >
+              <p>
+                <strong>Type:</strong> {record.type}
+              </p>
+              <p>
+                <strong>Amount:</strong> {record.amount}
+              </p>
+              <p>
+                <strong>Description:</strong> {record.description}
+              </p>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <button
+                  onClick={() => handleEditClick(record)}
+                  style={{
+                    backgroundColor: '#405a94',
+                    color: 'white',
+                    border: 'none',
+                    padding: '5px 10px',
+                    borderRadius: '4px'
+                  }}
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDeleteRecord(record.id)}
+                  style={{
+                    backgroundColor: '#405a94',
+                    color: 'white',
+                    border: 'none',
+                    padding: '5px 10px',
+                    borderRadius: '4px'
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No records available.</p>
+        )}
       </div>
     </div>
   )

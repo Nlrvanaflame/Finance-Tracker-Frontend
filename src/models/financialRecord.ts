@@ -9,3 +9,5 @@ export interface FinancialRecord {
 
   export type updateRecord = Pick<FinancialRecord, 'user_id' | 'type' 
   | 'amount' | 'description'>
+
+  export type NewFinancialRecord = Omit<FinancialRecord , "id" >

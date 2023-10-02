@@ -3,5 +3,8 @@ import { getRecords } from "../../services/routes";
 
 
 export const useGetRecord = () => {
-    return useQuery('financeRecords', getRecords);
+    return useQuery('financeRecords', getRecords,{
+      retry: false, 
+      staleTime: Infinity, 
+    });
   };

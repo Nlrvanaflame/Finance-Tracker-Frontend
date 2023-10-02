@@ -20,21 +20,21 @@ export const loginUser = (data: LoginUser) => {
 export const logoutUser = ()=> api.get<User>("/logout")
 
 
-export const updateUser = (data: UpdateUserData) => {
+export const updateUser = (data: { id: string; email: string; password: string }) => {
   const token = localStorage.getItem('token');
 
   if (!token) {
     throw new Error('Token not found');
   }
 
-  
-
-  return api.put(`/users`, data, {
+  return api.put('/users', data, {  // ID is included in the data object
     headers: {
       Authorization: `Bearer ${token}`
     }
   });
-}
+};
+
+
 
 export const getUserFromToken = async () => {
     const token = localStorage.getItem('token');
