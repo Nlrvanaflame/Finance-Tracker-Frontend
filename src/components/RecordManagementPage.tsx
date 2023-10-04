@@ -4,47 +4,38 @@ import { Formik, Form, Field } from 'formik'
 import { useGetRecord } from '../hooks/financeHooks/useGetRecord'
 import { useFinanceMutations } from '../hooks/financeHooks/useRecordMutations'
 import { useUser } from '../hooks/userHooks/useGetUser'
+import { format } from 'date-fns'
 
 const RecordManagementPage: React.FC = () => {
   const { data: recordsResponse, isLoading, isError } = useGetRecord()
-  const { data: user } = useUser()
+  const { data: user, isLoading: isUserLoading } = useUser()
   const createRecord = useFinanceMutations().useCreateRecord()
   const editRecord = useFinanceMutations().useEditRecord()
   const deleteRecord = useFinanceMutations().useDeleteRecord()
 
-  // const [filter, setFilter] = useState({ date: '', type: '', amount: '' })
   const [editMode, setEditMode] = useState(false)
   const [editingRecord, setEditingRecord] = useState<any>(null)
 
+  const [filter, setFilter] = useState({
+    date: '',
+    type: '',
+    amount: ''
+  })
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (!user) {
+    if (!isUserLoading && !user) {
       navigate('/login')
     }
   })
 
-  // const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  //   const { name, value } = e.target
-  //   setFilter({ ...filter, [name]: value })
-  // }
-
-  // const filteredRecords = records.filter((record) => {
-  //   return (
-  //     (filter.date === '' || record.record_date.includes(filter.date)) &&
-  //     (filter.type === '' || record.type.includes(filter.type)) &&
-  //     (filter.amount === '' || record.amount.toString().includes(filter.amount))
-  //   )
-  // })
-
-  if (isLoading || !user) {
+  if (isLoading) {
     return <div>Loading...</div>
   }
 
-  if (isError || !recordsResponse || !user.id) {
+  if (isError || !recordsResponse || !user?.id) {
     return <div>Error loading data. Please try again later.</div>
   }
-
   const records = recordsResponse.data
 
   const handleAddRecord = (values: any, resetForm: Function) => {
@@ -86,6 +77,32 @@ const RecordManagementPage: React.FC = () => {
   const handleEditClick = (record: any) => {
     setEditMode(true)
     setEditingRecord(record)
+  }
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFilter({ ...filter, [name]: value })
+  }
+
+  const isMatch = (record: any, filter: { date: string; type: string; amount: string }) => {
+    const isDateMatch =
+      !filter.date ||
+      (record.record_date && format(new Date(record.record_date), 'yyyy-MM-dd') === filter.date)
+    const isTypeMatch = !filter.type || record.type.includes(filter.type)
+    const isAmountMatch = !filter.amount || record.amount.toString().includes(filter.amount)
+
+    return isDateMatch && isTypeMatch && isAmountMatch
+  }
+
+  const filteredRecords = records.filter((record) => isMatch(record, filter))
+
+  const formatDate = (dateString: Date) => {
+    try {
+      return format(new Date(dateString), 'yyyy-MM-dd')
+    } catch (error) {
+      console.error('Error formatting date:', error)
+      return ''
+    }
   }
 
   return (
@@ -164,58 +181,121 @@ const RecordManagementPage: React.FC = () => {
         )}
       </Formik>
 
+      <div
+        style={{
+          backgroundColor: '#4d5b7a',
+          padding: '20px',
+          borderRadius: '8px',
+          margin: '20px 0'
+        }}
+      >
+        <h2 style={{ color: '#dcdde0' }}>Filter Records</h2>
+
+        <div style={{ marginBottom: '10px' }}>
+          <label style={{ marginRight: '10px', color: 'white' }}>Date: </label>
+          <input
+            type="date"
+            name="date"
+            value={filter.date}
+            onChange={handleFilterChange}
+            style={{ padding: '5px', color: '#35455D' }}
+          />
+        </div>
+
+        <div style={{ marginBottom: '10px' }}>
+          <label style={{ marginRight: '10px', color: 'white' }}>Type: </label>
+          <select
+            name="type"
+            value={filter.type}
+            onChange={handleFilterChange}
+            style={{ padding: '5px', color: '#35455D' }}
+          >
+            <option value="">All</option>
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+        </div>
+
+        <div style={{ marginBottom: '10px' }}>
+          <label style={{ marginRight: '10px', color: 'white' }}>Amount: </label>
+          <input
+            type="number"
+            name="amount"
+            value={filter.amount}
+            onChange={handleFilterChange}
+            style={{ padding: '5px', color: '#35455D' }}
+          />
+        </div>
+      </div>
+
       <div style={{ backgroundColor: '#4d5b7a', padding: '20px', borderRadius: '8px' }}>
         <h2 style={{ color: '#dcdde0' }}>Record List</h2>
 
-        {records && records.length > 0 ? (
-          records.map((record) => (
-            <div
-              key={record.id}
-              style={{
-                padding: '10px',
-                backgroundColor: '#5a678a',
-                borderRadius: '5px',
-                margin: '10px 0',
-                color: 'white'
-              }}
-            >
-              <p>
-                <strong>Type:</strong> {record.type}
-              </p>
-              <p>
-                <strong>Amount:</strong> {record.amount}
-              </p>
-              <p>
-                <strong>Description:</strong> {record.description}
-              </p>
-              <div style={{ display: 'flex', gap: '4px' }}>
-                <button
-                  onClick={() => handleEditClick(record)}
-                  style={{
-                    backgroundColor: '#405a94',
-                    color: 'white',
-                    border: 'none',
-                    padding: '5px 10px',
-                    borderRadius: '4px'
-                  }}
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteRecord(record.id)}
-                  style={{
-                    backgroundColor: '#405a94',
-                    color: 'white',
-                    border: 'none',
-                    padding: '5px 10px',
-                    borderRadius: '4px'
-                  }}
-                >
-                  Delete
-                </button>
+        {filteredRecords && filteredRecords.length > 0 ? (
+          filteredRecords.map((record) => {
+            let formattedDate = ''
+            try {
+              if (record.record_date) {
+                formattedDate = format(new Date(record.record_date), 'yyyy-MM-dd')
+              }
+            } catch (error) {
+              console.error('Error formatting date:', error)
+            }
+
+            return (
+              <div
+                key={record.id}
+                style={{
+                  padding: '10px',
+                  backgroundColor: '#5a678a',
+                  borderRadius: '5px',
+                  margin: '10px 0',
+                  color: 'white'
+                }}
+              >
+                <p>
+                  <strong>Type:</strong> {record.type}
+                </p>
+                <p>
+                  <strong>Amount:</strong> {record.amount}
+                </p>
+                <p>
+                  <strong>Description:</strong> {record.description}
+                </p>
+                {formattedDate && (
+                  <p>
+                    <strong>Date:</strong> {formattedDate}
+                  </p>
+                )}
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <button
+                    onClick={() => handleEditClick(record)}
+                    style={{
+                      backgroundColor: '#405a94',
+                      color: 'white',
+                      border: 'none',
+                      padding: '5px 10px',
+                      borderRadius: '4px'
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteRecord(record.id)}
+                    style={{
+                      backgroundColor: '#405a94',
+                      color: 'white',
+                      border: 'none',
+                      padding: '5px 10px',
+                      borderRadius: '4px'
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            )
+          })
         ) : (
           <p>No records available.</p>
         )}
