@@ -22,7 +22,7 @@ export interface RecordProps {
 
 export interface Record {
     type: string; 
-    amount: string; 
+    amount: number; 
     description: string;
 }
 

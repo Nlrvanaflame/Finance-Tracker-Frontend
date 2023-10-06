@@ -2,7 +2,7 @@ import { Formik, Form, Field } from 'formik'
 import { formStyle } from '../styles/RecordManagementStyles/FormStyle'
 import { RecordFormProps } from '../types/RecordFormType'
 
-const RecordForm: React.FC<RecordFormProps> = ({ initialValues, onSubmit, isEditMode }) => {
+const RecordForm: React.FC<RecordFormProps> = ({ initialValues, onSubmit }) => {
   return (
     <Formik
       initialValues={initialValues}
@@ -45,7 +45,7 @@ const RecordForm: React.FC<RecordFormProps> = ({ initialValues, onSubmit, isEdit
               backgroundColor: '#405a94'
             }}
           >
-            {isEditMode ? 'Edit Record' : 'Add Record'}
+            Add
           </button>
         </Form>
       )}

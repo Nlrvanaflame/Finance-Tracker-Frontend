@@ -4,11 +4,10 @@ export interface RecordFormProps {
     initialValues: {
       id?: string;
       type: string
-      amount: string
+      amount: number
       description: string
     }
      onSubmit: (values: Record, resetForm: Function, id?: string) => void;
-    isEditMode: boolean
     isSubmitting: boolean
   }
   

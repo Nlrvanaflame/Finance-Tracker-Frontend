@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Formik, Form, Field } from 'formik'
 import { useGetRecord } from '../hooks/financeHooks/useGetRecord'
 import { useFinanceMutations } from '../hooks/financeHooks/useRecordMutations'
 import { useUser } from '../hooks/userHooks/useGetUser'
@@ -15,6 +14,7 @@ import { headerStyle } from '../styles/RecordManagementStyles/HeaderStyle'
 import { formsContainerStyle } from '../styles/RecordManagementStyles/formsContainerStyle'
 import { isMatch } from '../utilFunctions/match'
 import { formatDate } from '../utilFunctions/dateFormat'
+import Modal from '../utilComponents/Modal'
 
 const RecordManagementPage: React.FC = () => {
   const { data: recordsResponse, isLoading, isError } = useGetRecord()
@@ -23,7 +23,8 @@ const RecordManagementPage: React.FC = () => {
   const editRecord = useFinanceMutations().useEditRecord()
   const deleteRecord = useFinanceMutations().useDeleteRecord()
 
-  const [editMode, setEditMode] = useState(false)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  // const [editMode, setEditMode] = useState(false)
   const [editingRecord, setEditingRecord] = useState<any>(null)
 
   const [filter, setFilter] = useState({
@@ -53,14 +54,13 @@ const RecordManagementPage: React.FC = () => {
       createRecord.mutate({
         user_id: user.id,
         type: values.type as 'income' | 'expense',
-        amount: parseFloat(values.amount),
+        amount: values.amount,
         description: values.description,
         record_date: new Date()
       })
 
       resetForm()
 
-      setEditMode(false)
       setEditingRecord(null)
     }
   }
@@ -72,7 +72,7 @@ const RecordManagementPage: React.FC = () => {
         data: {
           user_id: user.id,
           type: values.type as 'income' | 'expense',
-          amount: parseFloat(values.amount),
+          amount: values.amount,
           description: values.description
         }
       })
@@ -83,8 +83,8 @@ const RecordManagementPage: React.FC = () => {
   const handleDeleteRecord = (id: string) => deleteRecord.mutate(id)
 
   const handleEditClick = (record: any) => {
-    setEditMode(true)
     setEditingRecord(record)
+    setIsModalOpen(true)
   }
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -112,13 +112,8 @@ const RecordManagementPage: React.FC = () => {
 
       <div style={formsContainerStyle}>
         <RecordForm
-          initialValues={editMode ? editingRecord : { type: '', amount: '', description: '' }}
-          onSubmit={(values, resetForm) =>
-            editMode
-              ? handleEditRecord(editingRecord.id, values, resetForm)
-              : handleAddRecord(values, resetForm)
-          }
-          isEditMode={editMode}
+          initialValues={{ type: '', amount: 0, description: '' }}
+          onSubmit={(values, resetForm) => handleAddRecord(values, resetForm)}
           isSubmitting={false}
         />
 
@@ -129,6 +124,13 @@ const RecordManagementPage: React.FC = () => {
         records={formattedRecords}
         onEdit={handleEditClick}
         onDelete={handleDeleteRecord}
+      />
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        record={editingRecord}
+        handleEditRecord={handleEditRecord}
       />
     </div>
   )
