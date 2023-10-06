@@ -1,6 +1,7 @@
 import { deleteButtonStyle } from '../styles/RecordManagementStyles/DeleteButtonStyle'
 import { editButtonStyle } from '../styles/RecordManagementStyles/EditButtonStyle'
 import {
+  centeredContentStyle,
   recordListContainerStyle,
   recordStyle
 } from '../styles/RecordManagementStyles/RecordListStyle'
@@ -10,22 +11,30 @@ import { RecordProps } from '../types/FinancialRecordType'
 const Record: React.FC<RecordProps> = ({ record, onEdit, onDelete }) => {
   return (
     <div style={recordStyle}>
-      <p style={{ gridArea: 'type' }}>
-        <strong>Type:</strong> {record.type}
-      </p>
-      <p style={{ gridArea: 'amount' }}>
-        <strong>Amount:</strong> {record.amount}
-      </p>
-      <p style={{ gridArea: 'description' }}>
-        <strong>Description:</strong> {record.description}
-      </p>
-      {record.record_date && (
-        <p style={{ gridArea: 'date' }}>
-          <strong>Date:</strong> {record.record_date}
+      <div style={{ ...centeredContentStyle, gridArea: 'type' }}>
+        <p>
+          <strong>Type:</strong> {record.type}
         </p>
+      </div>
+      <div style={{ ...centeredContentStyle, gridArea: 'amount' }}>
+        <p>
+          <strong>Amount:</strong> {record.amount}
+        </p>
+      </div>
+      <div style={{ ...centeredContentStyle, gridArea: 'description' }}>
+        <p>
+          <strong>Description:</strong> {record.description}
+        </p>
+      </div>
+      {record.record_date && (
+        <div style={{ ...centeredContentStyle, gridArea: 'date' }}>
+          <p>
+            <strong>Date:</strong> {record.record_date}
+          </p>
+        </div>
       )}
 
-      <div style={{ gridArea: 'buttons', display: 'flex', justifyContent: 'center' }}>
+      <div style={{ ...centeredContentStyle, gridArea: 'buttons' }}>
         <button onClick={() => onEdit(record)} style={editButtonStyle}>
           Edit
         </button>

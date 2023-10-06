@@ -28,5 +28,13 @@ export const recordListContainerStyle: React.CSSProperties = {
     margin: '60px',
     color: 'white',
   };
+
+  export const centeredContentStyle = {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
+    width: '100%'
+  };
   
   

@@ -12,6 +12,9 @@ import { Record } from '../types/FinancialRecordType'
 import { mainContainerStyle } from '../styles/RecordManagementStyles/MainContainerStyle'
 import { backArrowStyle } from '../styles/RecordManagementStyles/BackArrowStyle'
 import { headerStyle } from '../styles/RecordManagementStyles/HeaderStyle'
+import { formsContainerStyle } from '../styles/RecordManagementStyles/formsContainerStyle'
+import { isMatch } from '../utilFunctions/match'
+import { formatDate } from '../utilFunctions/dateFormat'
 
 const RecordManagementPage: React.FC = () => {
   const { data: recordsResponse, isLoading, isError } = useGetRecord()
@@ -77,9 +80,7 @@ const RecordManagementPage: React.FC = () => {
     }
   }
 
-  const handleDeleteRecord = (id: string) => {
-    deleteRecord.mutate(id)
-  }
+  const handleDeleteRecord = (id: string) => deleteRecord.mutate(id)
 
   const handleEditClick = (record: any) => {
     setEditMode(true)
@@ -91,25 +92,14 @@ const RecordManagementPage: React.FC = () => {
     setFilter({ ...filter, [name]: value })
   }
 
-  const isMatch = (record: any, filter: { date: string; type: string; amount: string }) => {
-    const isDateMatch =
-      !filter.date ||
-      (record.record_date && format(new Date(record.record_date), 'yyyy-MM-dd') === filter.date)
-    const isTypeMatch = !filter.type || record.type.includes(filter.type)
-    const isAmountMatch = !filter.amount || record.amount.toString().includes(filter.amount)
-
-    return isDateMatch && isTypeMatch && isAmountMatch
-  }
-
   const filteredRecords = records.filter((record) => isMatch(record, filter))
 
   const formattedRecords = filteredRecords.map((record) => {
+    console.log(record.record_date)
+    console.log(format(new Date(record.record_date), 'yyyy-MM-dd'))
     return {
       ...record,
-      record_date:
-        record.record_date && !isNaN(new Date(record.record_date).getTime())
-          ? format(new Date(record.record_date), 'yyyy-MM-dd')
-          : 'Invalid Date'
+      record_date: formatDate(record.record_date)
     }
   })
 
@@ -120,18 +110,20 @@ const RecordManagementPage: React.FC = () => {
       </Link>
       <h1 style={headerStyle}>Record Management</h1>
 
-      <RecordForm
-        initialValues={editMode ? editingRecord : { type: '', amount: '', description: '' }}
-        onSubmit={(values, resetForm) =>
-          editMode
-            ? handleEditRecord(editingRecord.id, values, resetForm)
-            : handleAddRecord(values, resetForm)
-        }
-        isEditMode={editMode}
-        isSubmitting={false}
-      />
+      <div style={formsContainerStyle}>
+        <RecordForm
+          initialValues={editMode ? editingRecord : { type: '', amount: '', description: '' }}
+          onSubmit={(values, resetForm) =>
+            editMode
+              ? handleEditRecord(editingRecord.id, values, resetForm)
+              : handleAddRecord(values, resetForm)
+          }
+          isEditMode={editMode}
+          isSubmitting={false}
+        />
 
-      <RecordFilter filter={filter} onFilterChange={handleFilterChange} />
+        <RecordFilter filter={filter} onFilterChange={handleFilterChange} />
+      </div>
 
       <RecordList
         records={formattedRecords}
