@@ -1,139 +1,125 @@
-import React, { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useGetRecord } from '../hooks/financeHooks/useGetRecord'
-import { useFinanceMutations } from '../hooks/financeHooks/useRecordMutations'
-import { useUser } from '../hooks/userHooks/useGetUser'
-import { format } from 'date-fns'
-import RecordList from '../utilComponents/recordList'
-import RecordFilter from '../utilComponents/recordFilter'
-import RecordForm from '../utilComponents/recordForm'
-import { Record } from '../types/FinancialRecordType'
-import { mainContainerStyle } from '../styles/RecordManagementStyles/MainContainerStyle'
-import { backArrowStyle } from '../styles/RecordManagementStyles/BackArrowStyle'
-import { headerStyle } from '../styles/RecordManagementStyles/HeaderStyle'
-import { formsContainerStyle } from '../styles/RecordManagementStyles/formsContainerStyle'
-import { isMatch } from '../utilFunctions/match'
-import { formatDate } from '../utilFunctions/dateFormat'
-import Modal from '../utilComponents/Modal'
+import React, { useState, useEffect } from 'react';
+import { observer } from 'mobx-react-lite';
+import { Link, useNavigate } from 'react-router-dom';
 
-const RecordManagementPage: React.FC = () => {
-  const { data: recordsResponse, isLoading, isError } = useGetRecord()
-  const { data: user, isLoading: isUserLoading } = useUser()
-  const createRecord = useFinanceMutations().useCreateRecord()
-  const editRecord = useFinanceMutations().useEditRecord()
-  const deleteRecord = useFinanceMutations().useDeleteRecord()
+import { userStore } from '../stores/userStore';
+import RecordList from '../utilComponents/recordList';
+import RecordFilter from '../utilComponents/recordFilter';
+import RecordForm from '../utilComponents/recordForm';
+import { mainContainerStyle } from '../styles/RecordManagementStyles/MainContainerStyle';
+import { backArrowStyle } from '../styles/RecordManagementStyles/BackArrowStyle';
+import { headerStyle } from '../styles/RecordManagementStyles/HeaderStyle';
+import { formsContainerStyle } from '../styles/RecordManagementStyles/formsContainerStyle';
+import { financialStore } from '../stores/financialRecordStore';
+import { Record, RecordType } from '../types/FinancialRecordType';
+import { updateRecord } from '../models/financialRecord';
+import { isMatch } from '../utilFunctions/match';
+import { formatDate } from '../utilFunctions/dateFormat';
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  // const [editMode, setEditMode] = useState(false)
-  const [editingRecord, setEditingRecord] = useState<any>(null)
+const RecordManagementPage: React.FC = observer(() => {
+  const navigate = useNavigate();
+  const [isSubmitting, setSubmitting] = useState(false);
 
+  // Define initial filter state based on the RecordFilterProps
   const [filter, setFilter] = useState({
     date: '',
     type: '',
     amount: ''
-  })
-  const navigate = useNavigate()
+  });
 
   useEffect(() => {
-    if (!isUserLoading && !user) {
-      navigate('/login')
+    if (!userStore.user) {
+      navigate('/login');
     }
-  })
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
-
-  if (isError || !recordsResponse || !user?.id) {
-    return <div>Error loading data. Please try again later.</div>
-  }
-  const records = recordsResponse.data
+    financialStore.fetchRecords();
+  }, []);
 
   const handleAddRecord = (values: Record, resetForm: Function) => {
-    if (user && user.id) {
-      createRecord.mutate({
-        user_id: user.id,
-        type: values.type as 'income' | 'expense',
-        amount: values.amount,
-        description: values.description,
-        record_date: new Date()
-      })
-
-      resetForm()
-
-      setEditingRecord(null)
+    if (!userStore.user?.id) {
+        console.error("User ID is undefined.");
+        return;
     }
+    // Assuming `createRecord` needs a user_id explicitly
+    const newRecord = {
+        ...values,
+        user_id: userStore.user.id
+    };
+    setSubmitting(true);
+    financialStore.createRecord(newRecord as any); // Cast to any if the types are not aligning and need backend adjustments
+    resetForm();
+    setSubmitting(false);
+};
+
+const handleEditRecord = (record: RecordType) => {
+  if (!record.id) {
+      console.error("Record ID is missing.");
+      return;
   }
-
-  const handleEditRecord = (id: string, values: Record, resetForm: Function) => {
-    if (user && user.id) {
-      editRecord.mutate({
-        id,
-        data: {
-          user_id: user.id,
-          type: values.type as 'income' | 'expense',
-          amount: values.amount,
-          description: values.description
-        }
-      })
-      resetForm()
-    }
+  if (!userStore.user?.id) {
+      console.error("User ID is missing from userStore.");
+      return;
   }
+  if (record.type !== "income" && record.type !== "expense") {
+    console.error("Record type is invalid.");
+    return;
+}
 
-  const handleDeleteRecord = (id: string) => deleteRecord.mutate(id)
+  const updateData: updateRecord = {
+      user_id: userStore.user.id, 
+      type: record.type,
+      amount: record.amount,
+      description: record.description
+  };
 
-  const handleEditClick = (record: any) => {
-    setEditingRecord(record)
-    setIsModalOpen(true)
-  }
+  // Now call update with the correct type
+  financialStore.updateRecord(record.id, updateData);
+};
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target
-    setFilter({ ...filter, [name]: value })
-  }
 
-  const filteredRecords = records.filter((record) => isMatch(record, filter))
+
+  const handleDeleteRecord = (id: string) => {
+    financialStore.deleteRecord(id);
+  };
+
+  const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = event.target;
+    setFilter(prev => ({ ...filter, [name]: value }));
+  };
+
+  const filteredRecords = financialStore.records.filter((record) => isMatch(record, filter))
 
   const formattedRecords = filteredRecords.map((record) => {
-    console.log(record.record_date)
-    console.log(format(new Date(record.record_date), 'yyyy-MM-dd'))
     return {
       ...record,
-      record_date: formatDate(record.record_date)
+      record_date: record.record_date
     }
   })
+
+  if (financialStore.isLoading) return <div>Loading...</div>;
+  if (financialStore.error) return <div>Error loading data. Please try again later.</div>;
 
   return (
     <div style={mainContainerStyle}>
-      <Link style={backArrowStyle} to="/">
-        ←
-      </Link>
+      <Link style={backArrowStyle} to="/">←</Link>
       <h1 style={headerStyle}>Record Management</h1>
-
       <div style={formsContainerStyle}>
         <RecordForm
-          initialValues={{ type: '', amount: 0, description: '' }}
-          onSubmit={(values, resetForm) => handleAddRecord(values, resetForm)}
-          isSubmitting={false}
+          onSubmit={handleAddRecord}
+          initialValues={{ id: undefined, type: '', amount: 0, description: '' }}
+          isSubmitting={isSubmitting}
         />
-
-        <RecordFilter filter={filter} onFilterChange={handleFilterChange} />
+        <RecordFilter
+          filter={filter}
+          onFilterChange={handleFilterChange}
+        />
       </div>
-
       <RecordList
         records={formattedRecords}
-        onEdit={handleEditClick}
+        onEdit={handleEditRecord}
         onDelete={handleDeleteRecord}
       />
-
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        record={editingRecord}
-        handleEditRecord={handleEditRecord}
-      />
     </div>
-  )
-}
+  );
+});
 
-export default RecordManagementPage
+export default RecordManagementPage;
