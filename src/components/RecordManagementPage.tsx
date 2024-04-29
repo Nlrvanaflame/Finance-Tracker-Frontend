@@ -14,13 +14,11 @@ import { financialStore } from '../stores/financialRecordStore';
 import { Record, RecordType } from '../types/FinancialRecordType';
 import { updateRecord } from '../models/financialRecord';
 import { isMatch } from '../utilFunctions/match';
-import { formatDate } from '../utilFunctions/dateFormat';
 
 const RecordManagementPage: React.FC = observer(() => {
   const navigate = useNavigate();
   const [isSubmitting, setSubmitting] = useState(false);
 
-  // Define initial filter state based on the RecordFilterProps
   const [filter, setFilter] = useState({
     date: '',
     type: '',
@@ -39,13 +37,13 @@ const RecordManagementPage: React.FC = observer(() => {
         console.error("User ID is undefined.");
         return;
     }
-    // Assuming `createRecord` needs a user_id explicitly
+
     const newRecord = {
         ...values,
         user_id: userStore.user.id
     };
     setSubmitting(true);
-    financialStore.createRecord(newRecord as any); // Cast to any if the types are not aligning and need backend adjustments
+    financialStore.createRecord(newRecord as any);
     resetForm();
     setSubmitting(false);
 };
@@ -71,7 +69,6 @@ const handleEditRecord = (record: RecordType) => {
       description: record.description
   };
 
-  // Now call update with the correct type
   financialStore.updateRecord(record.id, updateData);
 };
 
