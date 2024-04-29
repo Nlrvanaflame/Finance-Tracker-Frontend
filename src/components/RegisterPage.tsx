@@ -1,13 +1,15 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { registerUser } from '../services/routes'
+import { useAtom } from 'jotai';
+import { confirmPasswordAtom, emailAtom, errorAtom, passwordAtom, usernameAtom } from '../states/atoms';
 
 const RegisterPage: React.FC = () => {
-  const [email, setEmail] = useState('')
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
+  const [email, setEmail] = useAtom(emailAtom);
+  const [username, setUsername] = useAtom(usernameAtom);
+  const [password, setPassword] = useAtom(passwordAtom);
+  const [confirmPassword, setConfirmPassword] = useAtom(confirmPasswordAtom);
+  const [error, setError] = useAtom(errorAtom);
 
   const navigate = useNavigate()
 

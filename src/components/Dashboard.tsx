@@ -1,23 +1,21 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Chart } from 'chart.js'
 import { PieController, ArcElement, Tooltip, Title } from 'chart.js'
-import { Pie } from 'react-chartjs-2'
+
 import { Link, useNavigate } from 'react-router-dom'
 import { useGetRecord } from '../hooks/financeHooks/useGetRecord'
 import { FinancialRecord } from '../models/financialRecord'
 import { useUser } from '../hooks/userHooks/useGetUser'
 import PieChart from './pieChart'
+import { financialDataAtom } from '../states/atoms'
+import { useAtom } from 'jotai'
 
 Chart.register(PieController, ArcElement, Tooltip, Title)
 
 const Dashboard: React.FC = () => {
   const { data: records, isLoading } = useGetRecord()
   const { data: user, isLoading: isUserLoading } = useUser()
-  const [financialData, setFinancialData] = useState({
-    totalIncome: 0,
-    totalExpenses: 0,
-    balance: 0
-  })
+  const [financialData, setFinancialData] = useAtom(financialDataAtom)
   const navigate = useNavigate()
 
   useEffect(() => {

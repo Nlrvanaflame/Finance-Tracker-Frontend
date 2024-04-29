@@ -15,6 +15,8 @@ import { formsContainerStyle } from '../styles/RecordManagementStyles/formsConta
 import { isMatch } from '../utilFunctions/match'
 import { formatDate } from '../utilFunctions/dateFormat'
 import Modal from '../utilComponents/Modal'
+import { useAtom } from 'jotai'
+import { editingRecordAtom, isModalOpenAtom, recordFilterAtom } from '../states/atoms'
 
 const RecordManagementPage: React.FC = () => {
   const { data: recordsResponse, isLoading, isError } = useGetRecord()
@@ -23,15 +25,9 @@ const RecordManagementPage: React.FC = () => {
   const editRecord = useFinanceMutations().useEditRecord()
   const deleteRecord = useFinanceMutations().useDeleteRecord()
 
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  // const [editMode, setEditMode] = useState(false)
-  const [editingRecord, setEditingRecord] = useState<any>(null)
-
-  const [filter, setFilter] = useState({
-    date: '',
-    type: '',
-    amount: ''
-  })
+  const [isModalOpen, setIsModalOpen] = useAtom(isModalOpenAtom);
+  const [editingRecord, setEditingRecord] = useAtom(editingRecordAtom);
+  const [filter, setFilter] = useAtom(recordFilterAtom);
   const navigate = useNavigate()
 
   useEffect(() => {

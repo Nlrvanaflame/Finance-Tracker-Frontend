@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useLoginUser } from '../hooks/userHooks/useUserMutations'
+import { useAtom } from 'jotai';
+import { emailAtom, passwordAtom } from '../states/atoms';
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useAtom(emailAtom);
+  const [password, setPassword] = useAtom(passwordAtom);
   const loginUser = useLoginUser()
 
   const navigate = useNavigate()
@@ -15,7 +17,7 @@ const LoginPage: React.FC = () => {
       {
         onSuccess: (data) => {
           if (data?.token) {
-            localStorage.setItem('token', data.token) // This line saves the token to localStorage
+            localStorage.setItem('token', data.token)
             navigate('/')
           } else {
             console.error('Token not received')

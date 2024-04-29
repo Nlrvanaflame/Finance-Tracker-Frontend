@@ -4,12 +4,14 @@ import { useUpdateUser } from '../hooks/userHooks/useUserMutations'
 import { useFormik } from 'formik'
 import myImage from '../assets/myImage.jpg'
 import { Link } from 'react-router-dom'
+import { useAtom } from 'jotai'
+import { messageAtom, showPasswordUpdateAtom } from '../states/atoms'
 
 const AccountManagementPage: React.FC = () => {
   const { data: user, isLoading } = useUser()
   const updateUser = useUpdateUser()
-  const [showPasswordUpdate, setShowPasswordUpdate] = useState(false)
-  const [message, setMessage] = useState('')
+  const [showPasswordUpdate, setShowPasswordUpdate] = useAtom(showPasswordUpdateAtom);
+  const [message, setMessage] = useAtom(messageAtom);
 
   useEffect(() => {
     if (updateUser.isSuccess) {
