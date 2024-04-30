@@ -1,13 +1,17 @@
-import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useUser } from '../hooks/userHooks/useGetUser'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useLogoutUserMutation, useGetUserFromTokenQuery } from '../services/api';
 
 const LandingPage: React.FC = () => {
-  const { data: user, isLoading } = useUser()
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    window.location.reload()
+  const { data: user, isLoading } = useGetUserFromTokenQuery();
+  const [logoutUser] = useLogoutUserMutation(); 
+
+  const handleLogout = async () => {
+    await logoutUser().unwrap(); 
+    localStorage.removeItem('token'); 
+    window.location.reload(); 
   }
+
   return (
     <div
       style={{
@@ -33,7 +37,7 @@ const LandingPage: React.FC = () => {
             <span>Loading...</span>
           ) : user ? (
             <div style={{ color: 'white', display: 'flex', alignItems: 'center' }}>
-              <span>Hello, {user.username} !</span>
+              <span>Hello, {user.username}!</span>
               <Link
                 to="/account-management"
                 style={{
@@ -156,7 +160,7 @@ const LandingPage: React.FC = () => {
         <p style={{ color: 'white', fontStyle: 'italic' }}>© 2023 Finance Tracker</p>
       </footer>
     </div>
-  )
+  );
 }
 
-export default LandingPage
+export default LandingPage;

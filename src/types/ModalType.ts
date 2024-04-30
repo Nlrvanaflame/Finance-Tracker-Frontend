@@ -1,4 +1,4 @@
-import { Record, RecordType } from "./FinancialRecordType";
+import { RecordType } from "./FinancialRecordType";
 
 export type ModalProps = {
     isOpen: boolean;

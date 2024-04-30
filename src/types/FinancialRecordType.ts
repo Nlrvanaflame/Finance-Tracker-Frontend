@@ -3,7 +3,7 @@ export interface RecordType {
   type: string;
   amount: number;
   description: string;
-  record_date:  string;
+  record_date:  Date;
 }
 
 
@@ -13,7 +13,7 @@ export interface RecordProps {
       type: string
       amount: number
       description: string
-      record_date: string
+      record_date: Date
     }
     onEdit: (record: RecordType) => void
     onDelete: (recordId: string) => void
@@ -21,7 +21,7 @@ export interface RecordProps {
 
 
 export interface Record {
-    type: string; 
+    type:'income' | 'expense';
     amount: number; 
     description: string;
 }

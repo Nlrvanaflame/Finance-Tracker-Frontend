@@ -3,7 +3,7 @@ import { Record } from "./FinancialRecordType"
 export interface RecordFormProps {
     initialValues: {
       id?: string;
-      type: string
+      type: "income" | "expense"
       amount: number
       description: string
     }

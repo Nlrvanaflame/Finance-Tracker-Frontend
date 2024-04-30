@@ -6,7 +6,7 @@ export interface RecordListProps {
       type: string
       amount: number
       description: string
-      record_date: string
+      record_date: Date
     }>
     onEdit: (record: RecordType) => void
     onDelete: (recordId: string) => void

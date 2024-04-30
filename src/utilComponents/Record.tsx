@@ -2,11 +2,10 @@ import { deleteButtonStyle } from '../styles/RecordManagementStyles/DeleteButton
 import { editButtonStyle } from '../styles/RecordManagementStyles/EditButtonStyle'
 import {
   centeredContentStyle,
-  recordListContainerStyle,
   recordStyle
 } from '../styles/RecordManagementStyles/RecordListStyle'
-import { buttonsContainerStyle } from '../styles/RecordManagementStyles/buttonsContainerStyles'
 import { RecordProps } from '../types/FinancialRecordType'
+import { formatDate } from '../utilFunctions/dateFormat'
 
 const Record: React.FC<RecordProps> = ({ record, onEdit, onDelete }) => {
   return (
@@ -29,7 +28,7 @@ const Record: React.FC<RecordProps> = ({ record, onEdit, onDelete }) => {
       {record.record_date && (
         <div style={{ ...centeredContentStyle, gridArea: 'date' }}>
           <p>
-            <strong>Date:</strong> {record.record_date}
+            <strong>Date:</strong> {formatDate(record.record_date)}
           </p>
         </div>
       )}
