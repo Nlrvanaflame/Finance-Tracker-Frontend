@@ -7,10 +7,20 @@ const LandingPage: React.FC = () => {
   const [logoutUser] = useLogoutUserMutation(); 
 
   const handleLogout = async () => {
-    await logoutUser().unwrap(); 
-    localStorage.removeItem('token'); 
-    window.location.reload(); 
+    try {
+      await logoutUser().unwrap();
+      localStorage.removeItem('token');
+      window.location.reload(); 
+    } catch (error) {
+      console.error('Logout failed:', error);
+      if (error instanceof Error) {
+        console.log(error.message);
+      } else {
+        console.log(JSON.stringify(error, null, 2));
+      }
+    }
   }
+  
 
   return (
     <div
